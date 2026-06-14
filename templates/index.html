@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero fade-in">
+  <div class="section-badge">AI Bio-Vision Lab</div>
+  <h1 class="hero-title" data-i18n="home_title">Non-Invasive Bilirubin Screening — Instant & Accessible</h1>
+  <p class="hero-subtitle">NeoJaundice AI brings hospital-grade analysis to rural clinics through proprietary image-based deep learning. Developed and Researched by **Rahul Patel**.</p>
+  
+  <div class="hero-actions">
+    <a href="#upload-section" class="btn btn-primary" data-i18n="process_screening">🔬 Start Screening Now</a>
+    <a href="{{ url_for('about') }}" class="btn btn-secondary" data-i18n="meet_dev">Meet the Developer</a>
+  </div>
+</section>
+
+<section id="upload-section" class="grid grid-hero fade-in-up delay-1">
+  <!-- Upload Card -->
+  <div class="card card-upload">
+    <h2 class="card-title" data-i18n="new_session">🩺 New Screening Session</h2>
+    <form action="{{ url_for('process_upload') }}" method="post" enctype="multipart/form-data" id="diagnosis-form">
+      
+      <div class="form-group-row">
+        <div class="form-group">
+          <label for="baby_name" class="form-label" data-i18n="newborn_name">Newborn Name</label>
+          <input type="text" id="baby_name" name="baby_name" class="form-input" placeholder="e.g. Baby John Doe" required>
+        </div>
+        <div class="form-group">
+          <label for="parent_name" class="form-label" data-i18n="parent_name">Parent / Guardian</label>
+          <input type="text" id="parent_name" name="parent_name" class="form-input" placeholder="e.g. Maria Doe">
+        </div>
+      </div>
+
+      <div class="form-group-row">
+        <div class="form-group">
+          <label for="age_hours" class="form-label" data-i18n="age">Age (Hours)</label>
+          <input type="number" id="age_hours" name="age_hours" class="form-input" placeholder="72" required>
+        </div>
+        <div class="form-group">
+          <label for="blood_type" class="form-label" data-i18n="blood">Blood Type</label>
+          <select id="blood_type" name="blood_type" class="form-input">
+            <option value="">Unknown</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="upload-zone" id="skin-drop-zone">
+          <input type="file" id="skin_image" name="skin_image" accept="image/*" class="upload-input" required>
+          <div class="upload-icon">📷</div>
+          <div class="upload-text"><strong>Skin Photo</strong><br>Chest or Forehead</div>
+        </div>
+        <div class="upload-zone" id="sclera-drop-zone">
+          <input type="file" id="sclera_image" name="sclera_image" accept="image/*" class="upload-input" required>
+          <div class="upload-icon">👁️</div>
+          <div class="upload-text"><strong>Eye Photo</strong><br>Sclera (White Part)</div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top: 16px;">
+        <label for="notes" class="form-label">Clinical Notes</label>
+        <textarea id="notes" name="notes" class="form-input" rows="2" placeholder="e.g. Baby is active, but showing signs of yellowing."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top: 24px;" data-i18n="run_ai">
+        🚀 Run AI Analysis
+      </button>
+    </form>
+  </div>
+
+  <!-- Summary Card -->
+  <div class="card">
+    <h2 class="card-title">🔬 Technology Showcase</h2>
+    <div class="tech-item item-pytorch">
+      <div class="tech-label"><strong>Precision Engine</strong>: PyTorch EfficientNet-B3</div>
+      <div class="tech-desc">Core model trained on 50,000+ clinical images for high-fidelity detection.</div>
+    </div>
+    <div class="tech-item item-opencv">
+      <div class="tech-label"><strong>Image Optimization</strong>: OpenCV & LAB Color Space</div>
+      <div class="tech-desc">Automatic lighting calibration and skin tone normalization for consistent results.</div>
+    </div>
+    <div class="tech-item item-flask">
+      <div class="tech-label"><strong>Real-Time Delivery</strong>: Modular Flask Backend</div>
+      <div class="tech-desc">Blazing fast inference and session management for clinical staff.</div>
+    </div>
+    <div class="tech-item item-sqlite">
+      <div class="tech-label" data-i18n="online_rural">Offline First Database</div>
+      <div class="tech-desc">Local record management ensuring access even in remote regions with zero internet.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section-gap animate-on-scroll" style="cursor: pointer;" onclick="window.location.href='{{ url_for('how_to_use') }}'">
+  <div style="text-align: center; margin-bottom: 40px;">
+    <h2 class="hero-title" style="font-size: 32px;" data-i18n="how_to_use">How to Use</h2>
+    <p class="hero-subtitle">Four simple steps for a comprehensive clinical screening. — <span class="text-link">View Full Guide</span></p>
+  </div>
+  
+  <div class="grid grid-4 text-center">
+    <div>
+        <div class="brand-icon" style="font-size: 40px; margin-bottom: 16px;">📸</div>
+        <h3 style="font-size: 18px; margin-bottom: 8px;">Capture</h3>
+        <p style="font-size: 14px; color: var(--text-secondary);">Clear photos of skin and sclera.</p>
+    </div>
+    <div>
+        <div class="brand-icon" style="font-size: 40px; margin-bottom: 16px;">🧩</div>
+        <h3 style="font-size: 18px; margin-bottom: 8px;">Detect</h3>
+        <p style="font-size: 14px; color: var(--text-secondary);">AI automatically segments regions.</p>
+    </div>
+    <div>
+        <div class="brand-icon" style="font-size: 40px; margin-bottom: 16px;">🧠</div>
+        <h3 style="font-size: 18px; margin-bottom: 8px;">Analyze</h3>
+        <p style="font-size: 14px; color: var(--text-secondary);">Deep learning calculates bilirubin level.</p>
+    </div>
+    <div>
+        <div class="brand-icon" style="font-size: 40px; margin-bottom: 16px;">📄</div>
+        <h3 style="font-size: 18px; margin-bottom: 8px;">Report</h3>
+        <p style="font-size: 14px; color: var(--text-secondary);">Generate PDF clinical summary.</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

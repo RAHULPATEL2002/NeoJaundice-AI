@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="section-badge fade-in">Authorized Access Only</div>
+<h1 class="page-title fade-in">Login to NeoJaundice AI</h1>
+<p class="page-subtitle fade-in">Access clinician tools, patient records, and advanced hospital analytics.</p>
+
+<section style="max-width: 450px; margin: 40px auto;" class="fade-in-up delay-1">
+  <form class="card" action="{{ url_for('login') }}" method="post">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="notice notice-{{ category }}" style="margin-bottom: 16px;">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="form-group">
+      <label for="username" class="form-label">Username</label>
+      <input id="username" name="username" type="text" placeholder="Clinician ID" class="form-input" required autofocus>
+    </div>
+
+    <div class="form-group">
+      <label for="password" class="form-label">Password</label>
+      <input id="password" name="password" type="password" placeholder="••••••••" class="form-input" required>
+    </div>
+
+    <button class="btn btn-primary btn-full" type="submit">
+      🔐 Authenticate & Login
+    </button>
+
+    <div style="margin-top: 20px; text-align: center; font-size: 14px; color: var(--text-muted);">
+      Don't have an account? <a href="{{ url_for('signup') }}" class="text-link">Register Staff</a>
+    </div>
+  </form>
+</section>
+
+{% endblock %}

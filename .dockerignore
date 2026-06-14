@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.git/
+.venv/
+venv/
+env/
+reports/research/*.png
+app/uploads/*
+static/generated/*
+models/*.pth
+models/*.onnx

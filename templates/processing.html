@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Progress Steps -->
+<div class="progress-steps fade-in">
+  <div class="progress-step">
+    <div class="progress-circle done">✓</div>
+  </div>
+  <div class="progress-line done"></div>
+  <div class="progress-step">
+    <div class="progress-circle done">✓</div>
+  </div>
+  <div class="progress-line done"></div>
+  <div class="progress-step">
+    <div class="progress-circle active">3</div>
+  </div>
+  <div class="progress-line"></div>
+  <div class="progress-step">
+    <div class="progress-circle">4</div>
+  </div>
+</div>
+
+<div class="section-badge fade-in">Computer Vision Analysis</div>
+<h1 class="page-title fade-in" style="font-size: clamp(28px, 4vw, 44px);">Image Processing Complete</h1>
+<p class="page-subtitle fade-in">Detected regions and preprocessing visualization before the final screening result.</p>
+
+<section class="grid grid-3 fade-in-up delay-2">
+  <div class="card">
+    <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 12px;">🟢 Skin Region</h2>
+    {% if detection %}
+      <div class="notice notice-info" style="margin-bottom: 12px; font-size: 13px;">
+        {{ detection["skin"].message }}<br>
+        <strong>Confidence: {{ "%.0f"|format(detection["skin"].confidence * 100) }}%</strong>
+      </div>
+    {% endif %}
+    <img class="media-img" src="{{ url_for('static', filename=skin_detection_path) }}" alt="Detected skin region">
+  </div>
+
+  <div class="card">
+    <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 12px;">🔵 Sclera Region</h2>
+    {% if detection %}
+      <div class="notice notice-info" style="margin-bottom: 12px; font-size: 13px;">
+        {{ detection["sclera"].message }}<br>
+        <strong>Confidence: {{ "%.0f"|format(detection["sclera"].confidence * 100) }}%</strong>
+      </div>
+    {% endif %}
+    <img class="media-img" src="{{ url_for('static', filename=sclera_detection_path) }}" alt="Detected sclera region">
+  </div>
+
+  <div class="card">
+    <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 12px;">⚙️ Preprocessing</h2>
+    <div class="notice notice-success" style="margin-bottom: 12px; font-size: 13px;">
+      Skin-tone normalization applied. Original vs normalized comparison shown below.
+    </div>
+    <img class="media-img" src="{{ url_for('static', filename=preprocessing_path) }}" alt="Preprocessing visualization">
+  </div>
+</section>
+
+<div class="section-gap"></div>
+
+<a class="btn btn-primary btn-full fade-in-up delay-4" href="{{ url_for('results', record_id=record_id) }}" style="max-width: 500px; margin: 0 auto; display: flex;">
+  📊 View Screening Results →
+</a>
+
+{% endblock %}

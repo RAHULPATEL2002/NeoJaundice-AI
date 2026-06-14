@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="section-badge fade-in">User Guide</div>
+<h1 class="page-title fade-in">How to Use NeoJaundice AI</h1>
+<p class="page-subtitle fade-in">Follow these best practices to ensure the most accurate AI screening results for the newborn.</p>
+
+<section class="grid grid-2 fade-in-up delay-1">
+  <div class="card">
+    <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 20px;">📸 Capturing Photos</h2>
+    
+    <div class="form-group" style="margin-bottom: 24px;">
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--accent-primary); margin-bottom: 8px;">1. Lighting Matters</h3>
+      <p style="font-size: 14px; color: var(--text-secondary);">Use natural, indirect daylight whenever possible. Avoid harsh fluorescent lights or strong yellow bulbs which can distort color analysis.</p>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 24px;">
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--accent-primary); margin-bottom: 8px;">2. Skin Photo (Forehead/Chest)</h3>
+      <p style="font-size: 14px; color: var(--text-secondary);">The skin photo should be taken from approximately 15-20cm away. Ensure there are no shadows or glare on the skin surface.</p>
+    </div>
+
+    <div class="form-group">
+      <h3 style="font-size: 16px; font-weight: 700; color: var(--accent-primary); margin-bottom: 8px;">3. Eye/Sclera Photo</h3>
+      <p style="font-size: 14px; color: var(--text-secondary);">Gently open the baby's eyelid if needed. The AI specifically looks at the white part of the eye (sclera). Ensure the eye is in sharp focus.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 20px;">📑 Interpretation</h2>
+    
+    <div class="table-wrap">
+      <table>
+        <tr>
+          <th>Classification</th>
+          <th>Action Required</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-normal">Normal</span></td>
+          <td>Routine monitoring. No immediate action needed.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-mild">Mild</span></td>
+          <td>Monitor closely. Ensure frequent breastfeeding.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-moderate">Moderate</span></td>
+          <td>Consult a pediatrician. Phototherapy may be required.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-severe">Severe</span></td>
+          <td><strong>Urgent:</strong> Seek immediate medical treatment at a hospital.</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="notice notice-danger" style="margin-top: 24px;">
+      <strong>Critical Safety Check:</strong> If the baby is lethargic, not feeding, or has a high-pitched cry, seek medical help immediately regardless of the AI screening result.
+    </div>
+  </div>
+</section>
+
+<div class="section-gap"></div>
+
+<div class="card animate-on-scroll" style="text-align: center;">
+  <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 12px;">Ready to begin?</h2>
+  <p style="margin-bottom: 24px; color: var(--text-secondary);">Follow the guidelines above for the best results.</p>
+  <a class="btn btn-primary" href="{{ url_for('home') }}" style="min-width: 200px;">🩺 Start Screening Now</a>
+</div>
+
+{% endblock %}

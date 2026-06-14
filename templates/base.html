@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Non-invasive neonatal jaundice detection system using AI-powered image analysis. Screen newborns for jaundice using skin and sclera photos.">
+  <meta name="author" content="Rahul Patel">
+  <title>{{ title or "NeoJaundice AI — Neonatal Jaundice Screening" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <!-- Particle Background -->
+  <canvas id="particles-canvas"></canvas>
+  <div class="grid-bg"></div>
+  <div class="ambient-orb orb-1"></div>
+  <div class="ambient-orb orb-2"></div>
+  <div class="ambient-orb orb-3"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="{{ url_for('home') }}" class="brand">
+        <div class="brand-icon">🧒</div>
+        <div class="brand-text">
+          <span>NeoJaundice AI</span>
+          <small>By Rahul Patel</small>
+        </div>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <div class="nav-links" id="nav-links">
+        <a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">
+            {% if lang == 'hi' %}🏠 गृह{% else %}🏠 Home{% endif %}
+        </a>
+        <a href="{{ url_for('how_to_use') }}" class="nav-link {% if request.endpoint == 'how_to_use' %}active{% endif %}">
+            {% if lang == 'hi' %}📖 उपयोग कैसे करें{% else %}📖 How to Use{% endif %}
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+            {% if lang == 'hi' %}📊 डैशबोर्ड{% else %}📊 Dashboard{% endif %}
+        </a>
+        <a href="{{ url_for('records') }}" class="nav-link {% if request.endpoint == 'records' %}active{% endif %}">
+            {% if lang == 'hi' %}📋 रिकॉर्ड्स{% else %}📋 Records{% endif %}
+        </a>
+        <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">
+            {% if lang == 'hi' %}ℹ️ परिचय{% else %}ℹ️ About{% endif %}
+        </a>
+
+        <div style="height: 24px; width: 1px; background: var(--border-glass); margin: 0 8px;"></div>
+        
+        <!-- Language Toggle -->
+        {% if lang == 'en' %}
+            <a href="{{ url_for('set_lang', new_lang='hi') }}" class="nav-link">🇮🇳 HI</a>
+        {% else %}
+            <a href="{{ url_for('set_lang', new_lang='en') }}" class="nav-link">🇺🇸 EN</a>
+        {% endif %}
+
+        <!-- Auth Links -->
+        {% if session.get('username') %}
+            <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm" style="margin-left: 8px;">Logout ({{ session['username'] }})</a>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="notice notice-{{ category }} fade-in" style="margin-bottom: 24px;">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">NeoJaundice AI</div>
+      <div class="footer-credit">Non-Invasive Neonatal Jaundice Detection System</div>
+      <div class="footer-dev">💻 Developed by **Rahul Patel**</div>
+      <div class="footer-credit" style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
+        IIIT Surat (2022-2026) | AI / ML Enthusiast | Startup Visionary
+      </div>
+      <div class="footer-links">
+        <a href="{{ url_for('home') }}" class="footer-link">Home</a>
+        <a href="{{ url_for('how_to_use') }}" class="footer-link">How to Use</a>
+        <a href="{{ url_for('dashboard') }}" class="footer-link">Dashboard</a>
+        <a href="{{ url_for('about') }}" class="footer-link">About</a>
+        <a href="mailto:rahulpatelanuppur@gmail.com" class="footer-link">Contact</a>
+      </div>
+      <div class="footer-credit" style="margin-top:20px; font-size:11px;">© 2026 Rahul Patel. For screening only — confirm with blood test.</div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

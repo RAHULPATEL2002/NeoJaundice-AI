@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="section-badge fade-in">
+    {% if lang == 'hi' %}डेटा आर्काइव{% else %}Data Archive{% endif %}
+</div>
+<h1 class="page-title fade-in">
+    {% if lang == 'hi' %}मरीजों का रिकॉर्ड{% else %}Patient Records{% endif %}
+</h1>
+<p class="page-subtitle fade-in">
+    {% if lang == 'hi' %}अस्पताल की स्क्रीनिंग और मरीजों के इतिहास का प्रबंधन करें।{% else %}Manage hospital screenings and patient historical data.{% endif %}
+</p>
+
+<section class="grid grid-3 fade-in-up delay-1">
+  <div class="card stat-card">
+    <div class="stat-number" data-counter="{{ records|length }}">0</div>
+    <div class="stat-label">Total Records</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-number" data-counter="{{ records|selectattr('severity', 'equalto', 'Severe')|list|length }}">0</div>
+    <div class="stat-label">Severe Cases</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-number" data-counter="{{ records|map(attribute='baby_name')|unique|list|length }}">0</div>
+    <div class="stat-label">Unique Patients</div>
+  </div>
+</section>
+
+<div class="section-gap"></div>
+
+<div class="card animate-on-scroll">
+  <div class="search-bar">
+    <input type="text" id="recordSearch" class="form-input" placeholder="{% if lang == 'hi' %}मरीज का नाम खोजें...{% else %}Search patient name...{% endif %}" style="max-width: 400px;">
+    <div style="flex-grow: 1;"></div>
+    <select class="form-input" style="max-width: 200px;">
+        <option value="">{% if lang == 'hi' %}सभी गंभीरता{% else %}All Severities{% endif %}</option>
+        <option value="Severe">Severe</option>
+        <option value="Moderate">Moderate</option>
+        <option value="Mild">Mild</option>
+        <option value="Normal">Normal</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table id="recordsTable">
+      <thead>
+        <tr>
+          <th>{% if lang == 'hi' %}दिनांक{% else %}Date{% endif %}</th>
+          <th>{% if lang == 'hi' %}मरीज{% else %}Patient{% endif %}</th>
+          <th>{% if lang == 'hi' %}बिलीरुबिन{% else %}Bilirubin{% endif %}</th>
+          <th>{% if lang == 'hi' %}गंभीरता{% else %}Severity{% endif %}</th>
+          <th>{% if lang == 'hi' %}रुझान{% else %}Trend{% endif %}</th>
+          <th>{% if lang == 'hi' %}कार्रवाई{% else %}Action{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in records %}
+        <tr data-name="{{ record.baby_name.lower() }}" data-severity="{{ record.severity }}">
+          <td><span style="font-size: 11px; color: var(--text-muted);">{{ record.created_at[:10] }}</span></td>
+          <td>
+            <div style="font-weight: 700; color: var(--text-primary);">{{ record.baby_name }}</div>
+            <div style="font-size: 11px; color: var(--text-muted);">{{ record.age_hours }}h | {{ record.blood_type or 'N/A' }}</div>
+          </td>
+          <td style="font-family: 'JetBrains Mono'; font-weight: 700;">{{ record.bilirubin }}</td>
+          <td>
+            <span class="badge badge-{{ record.severity.lower() }}">{{ record.severity }}</span>
+          </td>
+          <td>
+            <div class="trend-spark">
+              {% if trends[record.baby_name] %}
+                {% for b in trends[record.baby_name] %}
+                <div class="trend-bar" style="height: {{ (b / 25 * 100)|round }}%; background: {% if b > 15 %}var(--red){% elif b > 10 %}var(--orange){% else %}var(--green){% endif %};"></div>
+                {% endfor %}
+              {% else %}
+                <span style="font-size: 10px; color: var(--text-muted);">New</span>
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            <a href="{{ url_for('results', record_id=record.id) }}" class="btn btn-secondary btn-sm">Review</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

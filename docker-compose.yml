@@ -1,0 +1,16 @@
+services:
+  jaundice-app:
+    build: .
+    container_name: neonatal-jaundice-app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SYNC_SERVER_URL=
+    volumes:
+      - ./app:/app/app
+      - ./models:/app/models
+      - ./reports:/app/reports
+      - ./static/generated:/app/static/generated
+      - ./data:/app/data
+    restart: unless-stopped

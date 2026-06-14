@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="result-header fade-in">
+  <div class="section-badge">{% if lang == 'hi' %}स्वचालित विश्लेषण{% else %}Automated Analysis{% endif %}</div>
+  <h1 class="page-title">{% if lang == 'hi' %}निदान सारांश{% else %}Diagnosis Summary{% endif %}</h1>
+  <p class="page-subtitle">{% if lang == 'hi' %}मरीज: {{ record.baby_name }} | उम्र: {{ record.age_hours }} घंटे{% else %}Patient: {{ record.baby_name }} | Age: {{ record.age_hours }} Hours{% endif %}</p>
+</div>
+
+<div class="grid grid-hero fade-in-up delay-1">
+  <!-- Metrics Card -->
+  <div class="card">
+    <h2 class="card-title">🩺 {% if lang == 'hi' %}मुख्य मेट्रिक्स{% else %}Key Metrics{% endif %}</h2>
+    <div class="metrics-grid">
+      <div class="metric-item">
+        <div class="metric-value color-{{ record.severity.lower() }}">{{ record.bilirubin }}</div>
+        <div class="metric-label" data-i18n="estimated_bilirubin">Estimated Bilirubin (mg/dL)</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-value"><span class="badge badge-{{ record.severity.lower() }}">{{ record.severity }}</span></div>
+        <div class="metric-label" data-i18n="risk_level">Risk Level</div>
+      </div>
+    </div>
+    
+    <div class="risk-bar-container" style="margin-top: 32px;">
+      <div class="risk-bar-fill risk-{{ record.severity.lower() }}" style="width: {{ (record.bilirubin / 25 * 100)|min(100) }}%;"></div>
+    </div>
+    <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-top: 8px;">
+      <span>Normal</span>
+      <span>Mild</span>
+      <span>Moderate</span>
+      <span>Severe</span>
+    </div>
+  </div>
+
+  <!-- Recommendation Card -->
+  <div class="card">
+    <h2 class="card-title" data-i18n="clinical_rec">📋 Clinical Recommendation</h2>
+    <div class="notice notice-{{ record.severity.lower() }}" style="font-size: 16px; font-weight: 600; line-height: 1.5;">
+      {{ record.recommendation }}
+    </div>
+    <div style="margin-top: 20px; font-size: 14px; color: var(--text-secondary);">
+      <strong>Threshold Status:</strong> {{ record.threshold_status }}
+    </div>
+    {% if record.worsening_alert %}
+    <div class="notice notice-danger" style="margin-top: 16px; border: 2px solid var(--red);">
+      ⚠️ <strong>ALERT:</strong> Bilirubin levels are rising compared to previous sessions.
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="section-gap"></div>
+
+<section class="grid grid-hero fade-in-up delay-2">
+  <div class="card">
+    <h2 class="card-title" data-i18n="attention_map">🧠 AI Attention Map (Grad-CAM)</h2>
+    <div style="text-align: center;">
+      <img src="{{ url_for('static', filename=record.gradcam_path) }}" alt="Grad-CAM" class="result-img" style="max-height: 300px; border-radius: 12px; border: 1px solid var(--border-glass);">
+    </div>
+    <p style="font-size: 13px; color: var(--text-muted); margin-top: 16px; text-align: center;">
+        The heatmap shows where the AI looked to confirm the diagnosis (red zones indicate high confidence features).
+    </p>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title" data-i18n="class_probs">📊 Class Probabilities</h2>
+    <div class="chart-container" style="height: 300px;">
+        <canvas id="probChart"></canvas>
+    </div>
+  </div>
+</section>
+
+<div class="section-gap" style="text-align: center;">
+    <a href="{{ url_for('download_report', record_id=record.id) }}" class="btn btn-primary" style="min-width: 200px;">📄 Download PDF Report</a>
+    <a href="{{ url_for('home') }}" class="btn btn-secondary" style="margin-left: 16px;">🩺 New Screening</a>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('probChart').getContext('2d');
+    const probs = {{ probabilities|tojson }};
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(probs),
+            datasets: [{
+                data: Object.values(probs).map(v => (v * 100).toFixed(1)),
+                backgroundColor: ['#10b981', '#f59e0b', '#f97316', '#ef4444'],
+                borderRadius: 6
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { beginAtZero: true, max: 100, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                y: { grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+});
+</script>
+{% endblock %}

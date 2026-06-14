@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="section-badge fade-in">
+    {% if lang == 'hi' %}क्लीनिकल एनालिटिक्स{% else %}Clinical Analytics{% endif %}
+</div>
+<h1 class="page-title fade-in">
+    {% if lang == 'hi' %}अस्पताल डैशबोर्ड{% else %}Hospital Dashboard{% endif %}
+</h1>
+<p class="page-subtitle fade-in">
+    {% if lang == 'hi' %}स्क्रीनिंग गतिविधियों, रुझानों और नैदानिक वितरण आंकड़ों का अवलोकन।{% else %}Overview of screening activities, trends, and clinical distribution statistics.{% endif %}
+</p>
+
+{% if error_msg %}
+<div class="notice notice-danger fade-in" style="margin-bottom: 24px;">
+    ⚠️ <strong>Screening Data Sync:</strong> {{ error_msg }}. System operating in safe mode.
+</div>
+{% endif %}
+
+<div class="grid grid-4 fade-in-up delay-1">
+  <div class="card stat-card">
+    <div class="stat-number" data-counter="{{ total_screenings }}">0</div>
+    <div class="stat-label">{% if lang == 'hi' %}कुल स्क्रीनिंग{% else %}Total Screenings{% endif %}</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-number" data-counter="{{ severe_count }}">0</div>
+    <div class="stat-label">{% if lang == 'hi' %}🔴 गंभीर मामले{% else %}🔴 Severe Cases{% endif %}</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-number" data-counter="{{ average_bilirubin|round(1) }}">0</div>
+    <div class="stat-label">{% if lang == 'hi' %}औसत बिलीरुबिन{% else %}Avg. Bilirubin{% endif %}</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-number" data-counter="{{ patient_count }}">0</div>
+    <div class="stat-label">{% if lang == 'hi' %}अद्वितीय मरीज{% else %}Unique Patients{% endif %}</div>
+  </div>
+</div>
+
+<div class="section-gap"></div>
+
+<section class="grid grid-2 fade-in-up delay-2">
+  <div class="card">
+    <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 20px;">📈 {% if lang == 'hi' %}हालिया गतिविधि{% else %}Recent Activity{% endif %}</h2>
+    <div style="height: 250px;">
+        <canvas id="activityChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 24px;">🔴 {% if lang == 'hi' %}गंभीरता वितरण{% else %}Severity Distribution{% endif %}</h2>
+    <div style="width: 250px; height: 250px;">
+        <canvas id="severityChart"></canvas>
+    </div>
+  </div>
+</section>
+
+<div class="section-gap"></div>
+
+<div class="card animate-on-scroll">
+  <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 20px;">🏥 {% if lang == 'hi' %}महत्वपूर्ण अलर्ट{% else %}Critical Alerts{% endif %}</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>{% if lang == 'hi' %}बच्चे का नाम{% else %}Baby Name{% endif %}</th>
+          <th>{% if lang == 'hi' %}उम्र{% else %}Age{% endif %}</th>
+          <th>{% if lang == 'hi' %}बिलीरुबिन{% else %}Bilirubin{% endif %}</th>
+          <th>{% if lang == 'hi' %}गंभीरता{% else %}Severity{% endif %}</th>
+          <th>{% if lang == 'hi' %}कार्रवाई{% else %}Action{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for alert in critical_alerts %}
+        <tr>
+          <td><strong>{{ alert.baby_name }}</strong></td>
+          <td>{{ alert.age_hours }}h</td>
+          <td style="color: var(--red); font-weight: 700;">{{ alert.bilirubin }}</td>
+          <td><span class="badge badge-severe">{{ alert.severity }}</span></td>
+          <td><a href="{{ url_for('results', record_id=alert.id) }}" class="text-link">{% if lang == 'hi' %}समीक्षा{% else %}Review{% endif %}</a></td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">{% if lang == 'hi' %}वर्तमान में कोई महत्वपूर्ण अलर्ट सक्रिय नहीं है।{% else %}No critical alerts currently active.{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Activity Chart (Bar)
+    const activityCtx = document.getElementById('activityChart').getContext('2d');
+    new Chart(activityCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Day 7', 'Day 6', 'Day 5', 'Day 4', 'Day 3', 'Day 2', 'Today'],
+            datasets: [{
+                label: 'Screenings',
+                data: {{ (daily_counts or [0,0,0,0,0,0,0])|tojson }},
+                backgroundColor: 'rgba(99, 102, 241, 0.5)',
+                borderColor: 'rgba(99, 102, 241, 1)',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, border: { display: false } },
+                x: { grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Severity Chart (Doughnut)
+    const severityCtx = document.getElementById('severityChart').getContext('2d');
+    new Chart(severityCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Normal', 'Mild', 'Moderate', 'Severe'],
+            datasets: [{
+                data: [
+                    {{ (severity_dist.get('Normal', 0) or 0) }},
+                    {{ (severity_dist.get('Mild', 0) or 0) }},
+                    {{ (severity_dist.get('Moderate', 0) or 0) }},
+                    {{ (severity_dist.get('Severe', 0) or 0) }}
+                ],
+                backgroundColor: ['#10b981', '#f59e0b', '#f97316', '#ef4444'],
+                borderWidth: 0,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#8b95b0', usePointStyle: true, padding: 20 } }
+            },
+            cutout: '70%'
+        }
+    });
+});
+</script>
+{% endblock %}
